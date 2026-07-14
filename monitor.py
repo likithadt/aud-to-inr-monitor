@@ -15,7 +15,13 @@ def get_rate():
     response = requests.get(WISE_URL, timeout=30)
     response.raise_for_status()
 
-    data = response.json()[0]
+    payload = response.json()
+    if isinstance(payload, list) and payload:
+        data = payload[0]
+    elif isinstance(payload, dict):
+        data = payload
+    else:
+        raise ValueError("Unexpected Wise API response format")
 
     return {
         "source": data["source"],
@@ -26,6 +32,13 @@ def get_rate():
 
 
 def send_email(rate_data):
+    required_env = ["EMAIL_FROM", "EMAIL_TO", "EMAIL_PASSWORD"]
+    missing = [name for name in required_env if name not in os.environ]
+    if missing:
+        raise EnvironmentError(
+            f"Missing required environment variables for email: {', '.join(missing)}"
+        )
+
     sender = os.environ["EMAIL_FROM"]
     receiver = os.environ["EMAIL_TO"]
     password = os.environ["EMAIL_PASSWORD"]
@@ -98,8 +111,9 @@ def main():
         try:
             send_email(rate_data)
             print("Email sent.")
-        except Exception:
-            print("Email failed to send. Check SMTP settings and workflow logs for details.")
+        except Exception as exc:
+            print(f"Email failed to send: {exc}")
+            print("Check SMTP settings and workflow logs for details.")
     else:
         print("Threshold not reached.")
 
