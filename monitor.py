@@ -32,12 +32,6 @@ def get_rate():
 
 
 def send_email(rate_data):
-    required_env = ["EMAIL_FROM", "EMAIL_TO", "EMAIL_PASSWORD"]
-    missing = [name for name in required_env if name not in os.environ]
-    if missing:
-        raise EnvironmentError(
-            f"Missing required environment variables for email: {', '.join(missing)}"
-        )
 
     sender = os.environ["EMAIL_FROM"]
     receiver = os.environ["EMAIL_TO"]
