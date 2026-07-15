@@ -5,7 +5,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 
-TARGET_RATE = 67.0
+TARGET_RATE = 67.30
 AUD_AMOUNT = 5000
 
 WISE_URL = "https://wise.com/rates/live?source=aud&target=inr"
